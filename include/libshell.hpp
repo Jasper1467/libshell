@@ -89,7 +89,7 @@ public:
             it->second(vecTokens);
         else
         {
-            printf("Unknown command: %s", szCommand.c_str());
+            printf("\nUnknown command: %s\n", szCommand.c_str());
             return STATUS_UNKNOWN_COMMAND;
         }
 
