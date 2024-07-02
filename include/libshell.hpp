@@ -37,6 +37,11 @@ public:
         STATUS_UNKNOWN_COMMAND,
     };
 
+    void SetPrefix(std::string szPrefix)
+    {
+        m_szPrefix = szPrefix;
+    }
+
     Status_e Run()
     {
         std::string szInput;
