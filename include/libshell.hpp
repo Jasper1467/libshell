@@ -18,12 +18,13 @@ private:
     std::map<std::string, CommandFn> m_mapCommands;
     std::string_view m_szPrefix;
     std::string_view m_szSuffix;
-    
+
 public:
-    explicit CShell(const std::string_view& szPrefix = "> ", const std::string_view& szSuffix = "") : m_szPrefix(szPrefix), m_szSuffix(szSuffix)
+    explicit CShell(const std::string_view& szPrefix = "> ", const std::string_view& szSuffix = "")
+        : m_szPrefix(szPrefix), m_szSuffix(szSuffix)
     {
     }
-    
+
     void RegisterCommand(std::string szCommand, CommandFn fnFunction)
     {
         m_mapCommands[szCommand] = fnFunction;
@@ -51,9 +52,24 @@ public:
         m_mapCommands.clear();
     }
 
-    void SetPrefix(std::string szPrefix)
+    void SetPrefix(std::string_view szPrefix)
     {
         m_szPrefix = szPrefix;
+    }
+
+    std::string_view GetPrefix() const
+    {
+        return m_szPrefix;
+    }
+
+    void SetSuffix(std::string_view szSuffix)
+    {
+        m_szSuffix = szSuffix;
+    }
+
+    std::string_view GetSuffix() const
+    {
+        return m_szSuffix;
     }
 
     void ExecuteCommand(std::string szCommand, std::vector<std::string> vecArgs)
