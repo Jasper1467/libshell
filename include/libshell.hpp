@@ -17,17 +17,13 @@ public:
 private:
     std::map<std::string, CommandFn> m_mapCommands;
     std::string_view m_szPrefix;
-
+    std::string_view m_szSuffix;
+    
 public:
-    explicit CShell(const std::string_view& szPrefix) : m_szPrefix(szPrefix)
+    explicit CShell(const std::string_view& szPrefix = "> ", const std::string_view& szSuffix = "") : m_szPrefix(szPrefix), m_szSuffix(szSuffix)
     {
     }
-
-    CShell()
-    {
-        m_szPrefix = "> ";
-    }
-
+    
     void RegisterCommand(std::string szCommand, CommandFn fnFunction)
     {
         m_mapCommands[szCommand] = fnFunction;
@@ -89,7 +85,7 @@ public:
             it->second(vecTokens);
         else
         {
-            printf("\nUnknown command: %s\n", szCommand.c_str());
+            printf("Unknown command: %s\n", szCommand.c_str());
             return STATUS_UNKNOWN_COMMAND;
         }
 
