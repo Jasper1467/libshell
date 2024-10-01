@@ -11,7 +11,7 @@ This project implements a customizable command-line shell in C++ using the `CShe
 - **Infinite Command Loop**: Continuously listens for and executes commands until explicitly exited.
 
 ## Example
-```
+```cpp
     CShell Shell;
     Shell.RegisterCommand("test", Command_Test);
     Shell.RegisterCommand("exit", Command_Exit);
