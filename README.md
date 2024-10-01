@@ -9,3 +9,18 @@ This project implements a customizable command-line shell in C++ using the `CShe
 - **Input Parsing**: User input is parsed into commands and arguments.
 - **Customizable Prompt**: Supports customizable prefix and suffix for the shell prompt.
 - **Infinite Command Loop**: Continuously listens for and executes commands until explicitly exited.
+
+## Example
+```
+    CShell Shell;
+    Shell.RegisterCommand("test", Command_Test);
+    Shell.RegisterCommand("exit", Command_Exit);
+    Shell.RegisterCommand("args", Command_Args);
+
+    while (true)
+    {
+        Shell.Run();
+    }
+
+    return 0;
+```
