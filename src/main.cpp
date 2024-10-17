@@ -7,7 +7,7 @@
 
 void Command_Test(std::vector<std::string> vecArgs)
 {
-    printf("Working!\n");
+    std::cout << "Working!" << std::endl;
 }
 
 void Command_Exit(std::vector<std::string> vecArgs)
@@ -24,13 +24,20 @@ void Command_Args(std::vector<std::string> vecArgs)
 int main()
 {
     CShell Shell;
-    Shell.RegisterCommand("test", Command_Test);
-    Shell.RegisterCommand("exit", Command_Exit);
-    Shell.RegisterCommand("args", Command_Args);
+    Shell.RegisterCommand(CShell::Command_t("test", Command_Test, { "t" }));
+    Shell.RegisterCommand(CShell::Command_t("exit", Command_Exit, { "x" }));
+    Shell.RegisterCommand(CShell::Command_t("arguments", Command_Args, { "args" }));
 
     while (true)
     {
         Shell.Run();
+
+        std::cout << "=== History ===" << std::endl;
+
+        for (std::string szHistory : Shell.GetHistory())
+            std::cout << szHistory << std::endl;
+
+        std::cout << "===============" << std::endl;
     }
 
     return 0;

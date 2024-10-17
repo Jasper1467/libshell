@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cstdio>
 #include <functional>
 #include <iostream>
-#include <map>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -14,10 +12,35 @@ class CShell
 public:
     using CommandFn = std::function<void(const std::vector<std::string>)>;
 
+    enum Status_e
+    {
+        STATUS_SUCCESS = 0,
+        STATUS_FAILED,
+        STATUS_UNKNOWN_COMMAND,
+        STATUS_EMPTY_INPUT,
+        STATUS_EMPTY_TOKENS,
+    };
+
+    struct Command_t
+    {
+        Command_t(std::string szCommand, CommandFn fnFunction, std::vector<std::string> vecAliases = {})
+            : m_szCommand(std::move(szCommand)), m_vecAliases(std::move(vecAliases)),
+              m_fnFunction(std::move(fnFunction))
+        {
+        }
+
+        std::string m_szCommand;
+        std::vector<std::string> m_vecAliases;
+        CommandFn m_fnFunction;
+    };
+
 private:
-    std::map<std::string, CommandFn> m_mapCommands;
+    std::vector<Command_t> m_vecCommands;
+
     std::string_view m_szPrefix;
     std::string_view m_szSuffix;
+
+    std::vector<std::string> m_vecHistory;
 
 public:
     explicit CShell(const std::string_view& szPrefix = "> ", const std::string_view& szSuffix = "")
@@ -25,31 +48,36 @@ public:
     {
     }
 
-    void RegisterCommand(std::string szCommand, CommandFn fnFunction)
+    void RegisterCommand(Command_t Cmd)
     {
-        m_mapCommands[szCommand] = fnFunction;
+        m_vecCommands.push_back(Cmd);
     }
 
     void UnregisterCommand(std::string szCommand)
     {
-        m_mapCommands.erase(m_mapCommands.find(szCommand));
+        for (auto it = m_vecCommands.begin(); it != m_vecCommands.end(); ++it)
+        {
+            if (it->m_szCommand == szCommand)
+            {
+                m_vecCommands.erase(it);
+                break;
+            }
+        }
     }
 
-    enum Status_e
+    const std::vector<Command_t> GetCommands() const
     {
-        STATUS_SUCCESS = 0,
-        STATUS_FAILED,
-        STATUS_UNKNOWN_COMMAND,
-    };
+        return m_vecCommands;
+    }
 
-    const std::map<std::string, CommandFn> GetCommands() const
+    const std::vector<std::string> GetHistory() const
     {
-        return m_mapCommands;
+        return m_vecHistory;
     }
 
     void ClearCommands()
     {
-        m_mapCommands.clear();
+        m_vecCommands.clear();
     }
 
     void SetPrefix(std::string_view szPrefix)
@@ -74,9 +102,21 @@ public:
 
     void ExecuteCommand(std::string szCommand, std::vector<std::string> vecArgs)
     {
-        auto it = m_mapCommands.find(szCommand);
-        if (it != m_mapCommands.end())
-            it->second(vecArgs);
+        for (auto& Cmd : m_vecCommands)
+        {
+            if (Cmd.m_szCommand == szCommand ||
+                std::find(Cmd.m_vecAliases.begin(), Cmd.m_vecAliases.end(), szCommand) != Cmd.m_vecAliases.end())
+            {
+                Cmd.m_fnFunction(vecArgs);
+
+                std::string szFormatted = szCommand.append(" ");
+                for (auto& Arg : vecArgs)
+                    szFormatted += Arg + " ";
+
+                m_vecHistory.push_back(szFormatted);
+                return;
+            }
+        }
     }
 
     Status_e Run()
@@ -87,25 +127,29 @@ public:
         std::getline(std::cin, szInput);
 
         if (szInput.empty())
-            return STATUS_FAILED;
+            return STATUS_EMPTY_INPUT;
 
         auto vecTokens = ParseInput(szInput);
         if (vecTokens.empty())
-            return STATUS_FAILED;
+            return STATUS_EMPTY_TOKENS;
 
         auto szCommand = vecTokens[0];
         vecTokens.erase(vecTokens.begin());
 
-        auto it = m_mapCommands.find(szCommand);
-        if (it != m_mapCommands.end())
-            it->second(vecTokens);
-        else
+        for (auto& Cmd : m_vecCommands)
         {
-            printf("Unknown command: %s\n", szCommand.c_str());
-            return STATUS_UNKNOWN_COMMAND;
+            if (Cmd.m_szCommand == szCommand ||
+                std::find(Cmd.m_vecAliases.begin(), Cmd.m_vecAliases.end(), szCommand) != Cmd.m_vecAliases.end())
+            {
+                Cmd.m_fnFunction(vecTokens);
+
+                m_vecHistory.push_back(szInput);
+                return STATUS_SUCCESS;
+            }
         }
 
-        return STATUS_SUCCESS;
+        std::cout << "Unknown command: " << szCommand << std::endl;
+        return STATUS_UNKNOWN_COMMAND;
     }
 
 private:
