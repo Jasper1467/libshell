@@ -1,6 +1,6 @@
 # Command Shell Library
 
-This project implements a customizable command-line shell in C++ using the `CShell` class. It allows users to register, unregister, and execute custom commands based on user input. The shell continuously runs, processes input, and supports argument parsing.
+A customizable C++ command-line shell using the CShell class, allowing users to add, remove, and run commands with argument support.
 
 ## Features
 
