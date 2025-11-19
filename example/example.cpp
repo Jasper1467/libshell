@@ -1,17 +1,3 @@
-# Command Shell Library
-
-A customizable C++ command-line shell using the CShell class, allowing users to add, remove, and run commands with argument support.
-
-## Features
-
-- **Command Registration**: Easily register and unregister commands with callback functions.
-- **Argument Handling**: Commands can accept and process arguments passed as strings.
-- **Input Parsing**: User input is parsed into commands and arguments.
-- **Customizable Prompt**: Supports customizable prefix and suffix for the shell prompt.
-- **Infinite Command Loop**: Continuously listens for and executes commands until explicitly exited.
-
-## Example
-```cpp
 #include <libshell.hpp>
 
 #include <iostream>
@@ -45,4 +31,4 @@ int main()
     shell.saveHistory(".shell_history");
 
     return 0;
-}```
+}
