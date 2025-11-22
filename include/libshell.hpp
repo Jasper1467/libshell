@@ -33,9 +33,6 @@ namespace libshell
     {
         Success = 0,
         Failed,
-        UnknownCommand,
-        EmptyInput,
-        EmptyTokens,
     };
 
     using CommandFunction = std::function<void(const std::vector<std::string>&)>;
