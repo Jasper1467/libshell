@@ -12,6 +12,8 @@ add_library(libshell STATIC
     src/libshell.cpp
 )
 
+set_target_properties(libshell PROPERTIES OUTPUT_NAME "shell")
+
 # Set include directories for the library
 target_include_directories(libshell PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
