@@ -1,6 +1,6 @@
 # Command Shell Library
 
-A lightweight, extensible C++ command-line shell framework for embedding interactive consoles into applications
+A lightweight, extensible C++ command-line shell library for embedding interactive consoles into applications
 
 ## Features
 **Command System**
