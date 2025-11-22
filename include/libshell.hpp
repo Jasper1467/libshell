@@ -3,7 +3,6 @@
 #include <functional>
 #include <iostream>
 #include <string>
-#include <string_view>
 #include <vector>
 
 namespace libshell
@@ -11,12 +10,8 @@ namespace libshell
     struct Config
     {
         bool enableAliases = true;
-        bool enableAutocomplete = false;
         bool enableSuggestions = true;
         bool enableBuiltins = true;
-        bool enableVariables = false;
-        bool enablePiping = false;
-        bool enableRedirection = false;
 
         std::string prompt = "> ";
         std::string suffix = "";
@@ -24,9 +19,6 @@ namespace libshell
 
         std::istream* input = &std::cin;
         std::ostream* output = &std::cout;
-
-        // Optional custom handlers
-        std::function<void(const std::string&)> autocompleteHandler = nullptr;
     };
 
     enum class Status
@@ -67,7 +59,10 @@ namespace libshell
         void saveHistory(const std::string& filepath) const;
         void loadHistory(const std::string& filepath);
 
-        Config setConfig(const Config& config) { currentConfig = config; }
+        void setConfig(const Config& config)
+        {
+            currentConfig = config;
+        }
 
     private:
         Config currentConfig;
