@@ -1,14 +1,50 @@
 # Command Shell Library
 
-A customizable C++ command-line shell using the CShell class, allowing users to add, remove, and run commands with argument support.
+A lightweight, extensible C++ command-line shell framework for embedding interactive consoles into applications
 
 ## Features
+**Command System**
+- Register and unregister commands dynamically
+- Each command is a callback (```std::function<void(std::string)>``` or custom return type)
+- Optional support for aliases
 
-- **Command Registration**: Easily register and unregister commands with callback functions.
-- **Argument Handling**: Commands can accept and process arguments passed as strings.
-- **Input Parsing**: User input is parsed into commands and arguments.
-- **Customizable Prompt**: Supports customizable prefix and suffix for the shell prompt.
-- **Infinite Command Loop**: Continuously listens for and executes commands until explicitly exited.
+**Input Parsing**
+- Tokenizes user input into command + arguments
+- Quoted strings ("like this") are parsed as single arguments
+
+**Customizable Shell Behaviour**
+- Configurable prompt prefix & suffix
+- Configurable input and output streams
+
+**History**
+- Built-in command history tracking
+- Load/save history from a file
+- Optional history size limits via ``Config``
+
+**Runtime**
+- ``run(config)`` for a persistent loop
+- ``runOnce(config)`` for single-step execution (useful for GUIs/network shells)
+
+# Installation
+**Clone and build:**
+```
+git clone https://github.com/Jasper1467/libshell.git
+cd libshell
+cmake -B build
+cmake --build build
+```
+
+**CMake integration:**
+```
+add_subdirectory(libshell)
+target_link_libraries(your_target PRIVATE libshell)
+```
+
+Or if installed system-wide:
+```
+find_package(libshell REQUIRED)
+target_link_libraries(your_target PRIVATE libshell::libshell)
+```
 
 ## Example
 ```cpp
