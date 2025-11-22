@@ -1,14 +1,33 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
 
-class Shell
+namespace libshell
 {
-public:
-    using CommandFunction = std::function<void(const std::vector<std::string>&)>;
+    struct Config
+    {
+        bool enableAliases = true;
+        bool enableAutocomplete = false;
+        bool enableSuggestions = true;
+        bool enableBuiltins = true;
+        bool enableVariables = false;
+        bool enablePiping = false;
+        bool enableRedirection = false;
+
+        std::string prompt = "> ";
+        std::string suffix = "";
+        size_t historyLimit = 1000;
+
+        std::istream* input = &std::cin;
+        std::ostream* output = &std::cout;
+
+        // Optional custom handlers
+        std::function<void(const std::string&)> autocompleteHandler = nullptr;
+    };
 
     enum class Status
     {
@@ -19,6 +38,7 @@ public:
         EmptyTokens,
     };
 
+    using CommandFunction = std::function<void(const std::vector<std::string>&)>;
     struct Command
     {
         Command(std::string name, CommandFunction function, std::vector<std::string> aliases = {})
@@ -31,43 +51,39 @@ public:
         CommandFunction function;
     };
 
-private:
-    std::vector<Command> commands;
-
-    std::string_view prefix;
-    std::string_view suffix;
-
-    std::vector<std::string> history;
-
-public:
-    // Constructor
-    Shell() : prefix("> "), suffix("")
+    class Shell
     {
-    }
+    public:
+        explicit Shell() = default;
 
-    // Command registration
-    void registerCommand(const std::string& name, CommandFunction func);
-    void registerCommand(const std::string& name, CommandFunction func, const std::vector<std::string>& aliases);
-    void unregisterCommand(const std::string& name);
+        Status run(const Config& config);
+        Status runOnce(const Config& config);
 
-    // History management
-    void clearHistory();
-    size_t getHistorySize() const;
-    std::string getHistoryEntry(size_t index) const;
-    void saveHistory(const std::string& filepath) const;
-    void loadHistory(const std::string& filepath);   
+        void registerCommand(const std::string&, CommandFunction);
+        void registerCommand(const std::string&, CommandFunction, const std::vector<std::string>& aliases);
+        void unregisterCommand(const std::string&);
 
-    // Main execution
-    Status run();
-    Status runOnce();
+        // History management
+        void clearHistory();
+        size_t getHistorySize() const;
+        std::string getHistoryEntry(size_t index) const;
+        void saveHistory(const std::string& filepath) const;
+        void loadHistory(const std::string& filepath);
 
-    // Configuration
-    void setPrompt(const std::string& prompt);
-    void setSuffix(const std::string& suffix);
+        Config setConfig(const Config& config) { currentConfig = config; }
 
-private:
-    void executeCommand(const std::string& command_line);
-    std::vector<std::string> tokenize(const std::string& line) const;
-    std::string getCommandName(const std::vector<std::string>& tokens) const;
-    void addHistoryEntry(const std::string& entry);
-};
+    private:
+        Config currentConfig;
+
+        std::vector<Command> commands;
+        std::vector<std::string> history;
+        std::unordered_map<std::string, std::string> variables;
+
+        void executeCommand(const std::string&);
+        std::vector<std::string> tokenize(const std::string&) const;
+        std::string getCommandName(const std::vector<std::string>&) const;
+        void addHistoryEntry(const std::string&);
+        void applyConfig(const Config& config);
+    };
+
+} // namespace libshell

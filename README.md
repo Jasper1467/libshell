@@ -20,7 +20,8 @@ A customizable C++ command-line shell using the CShell class, allowing users to 
 
 int main()
 {
-    Shell shell;
+    libshell::Config shellConfig;
+    libshell::Shell shell;
 
     // Register a simple command
     shell.registerCommand("hello", [](const std::vector<std::string>&) { std::cout << "Hello, World!\n"; });
@@ -39,7 +40,7 @@ int main()
     shell.loadHistory(".shell_history");
 
     // Run the shell
-    shell.run();
+    shell.run(shellConfig);
 
     // Save history to file (optional)
     shell.saveHistory(".shell_history");
